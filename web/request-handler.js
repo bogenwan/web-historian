@@ -2,13 +2,16 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var httpHelpers = require('./http-helpers');
 var fs = require('fs');
+
 // require more modules/folders here!
 
 var paths = {
   indexHTML: path.join(__dirname, '../web/public/index.html'),
-  randomPath: path.join(__dirname, '../test/testdata/sites/')
+  randomPath: path.join(__dirname, '../test/testdata/sites/'),
+  sitePath: path.join(__dirname, '../archives/sites.txt')
 };
 
+var result;
 
 exports.handleRequest = (req, res) => {
   // var readFile = function(path, ) 
@@ -35,6 +38,24 @@ exports.handleRequest = (req, res) => {
       res.writeHead(200, httpHelpers.headers);
       res.end(data);
     }); 
+  }
+
+  var body = '';
+  if (req.method === 'POST' && req.url === '/') {
+    req.on('data', function(chunk) {
+      body += chunk;
+    });
+    req.on('end', function() {
+      body = body.split('=');
+      result = body[1];
+      fs.appendFile(paths.sitePath, (result + '\n'), (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+      res.writeHead(302, httpHelpers.headers);
+      res.end();
+    });
   }
 };
 

@@ -59,6 +59,7 @@ describe('server', function() {
         // Reset the test file and process request
         fs.closeSync(fs.openSync(archive.paths.list, 'w'));
 
+
         request
           .post('/')
           .type('form')
@@ -66,9 +67,9 @@ describe('server', function() {
           .expect(302, function (err) {
             if (!err) {
               var fileContents = fs.readFileSync(archive.paths.list, 'utf8');
+              console.log(fileContents);
               expect(fileContents).to.equal(url + '\n');
             }
-
             done(err);
           });
       });
